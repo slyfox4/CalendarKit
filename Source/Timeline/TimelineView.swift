@@ -15,15 +15,24 @@ class TimelineView: UIView, ReusableView {
     return Date()
   }
 
-  var eventViews = [EventView]() {
-    willSet {
-      eventViews.forEach {$0.removeFromSuperview()}
-    }
+//  var eventViews = [EventView]() {
+//    willSet {
+//      eventViews.forEach {$0.removeFromSuperview()}
+//    }
+//    didSet {
+//      eventViews.forEach {addSubview($0)}
+//      setNeedsLayout()
+//    }
+//  }
+
+
+  var eventViews = [EventView]()
+  var eventDescriptors = [EventDescriptor]() {
     didSet {
-      eventViews.forEach {addSubview($0)}
-      setNeedsLayout()
+      recalculateLayout()
     }
   }
+  var pool = ReusePool<EventView>()
 
   //IFDEF DEBUG
 
@@ -152,7 +161,12 @@ class TimelineView: UIView, ReusableView {
     label.sizeToFit()
     label.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: 375, height: 50))
 
-    layoutEvents()
+    for ev in eventViews {
+      ev.frame = ev.descriptor!.frame
+      ev.setNeedsDisplay()
+      ev.setNeedsLayout()
+      print(ev.frame)
+    }
     layoutNowLine()
   }
 
@@ -170,17 +184,17 @@ class TimelineView: UIView, ReusableView {
     }
   }
 
-  func layoutEvents() {
-    if eventViews.isEmpty {return}
+  func recalculateLayout() {
+//    if eventViews.isEmpty {return}
 
     let day = TimePeriod(beginning: date.dateOnly(),
                          chunk: TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 1, weeks: 0, months: 0, years: 0))
 
-    let validEvents = eventViews.filter {$0.datePeriod.overlaps(with: day)}
+    let validEvents = eventDescriptors.filter {$0.datePeriod.overlaps(with: day)}
       .sorted {$0.datePeriod.beginning!.isEarlier(than: $1.datePeriod.beginning!)}
 
-    var groupsOfEvents = [[EventView]]()
-    var overlappingEvents = [EventView]()
+    var groupsOfEvents = [[EventDescriptor]]()
+    var overlappingEvents = [EventDescriptor]()
 
     for event in validEvents {
       if overlappingEvents.isEmpty {
@@ -200,7 +214,7 @@ class TimelineView: UIView, ReusableView {
 
     for overlappingEvents in groupsOfEvents {
       let totalCount = CGFloat(overlappingEvents.count)
-      for (index, event) in overlappingEvents.enumerated() {
+      for var (index, event) in overlappingEvents.enumerated() {
         let startY = dateToY(event.datePeriod.beginning!)
         let endY = dateToY(event.datePeriod.end!)
         let floatIndex = CGFloat(index)
@@ -209,10 +223,61 @@ class TimelineView: UIView, ReusableView {
         event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
       }
     }
+
+    for descriptor in eventDescriptors {
+      let view = pool.dequeue()
+      addSubview(view)
+      eventViews.append(view)
+      view.updateWithDescriptor(event: descriptor)
+    }
+    setNeedsLayout()
   }
+//
+//  func layoutEvents() {
+//    if eventViews.isEmpty {return}
+//
+//    let day = TimePeriod(beginning: date.dateOnly(),
+//                         chunk: TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 1, weeks: 0, months: 0, years: 0))
+//
+//    let validEvents = eventViews.filter {$0.datePeriod.overlaps(with: day)}
+//      .sorted {$0.datePeriod.beginning!.isEarlier(than: $1.datePeriod.beginning!)}
+//
+//    var groupsOfEvents = [[EventView]]()
+//    var overlappingEvents = [EventView]()
+//
+//    for event in validEvents {
+//      if overlappingEvents.isEmpty {
+//        overlappingEvents.append(event)
+//        continue
+//      }
+//      if overlappingEvents.last!.datePeriod.overlaps(with: event.datePeriod) {
+//        overlappingEvents.append(event)
+//        continue
+//      }
+//      groupsOfEvents.append(overlappingEvents)
+//      overlappingEvents.removeAll()
+//    }
+//
+//    groupsOfEvents.append(overlappingEvents)
+//    overlappingEvents.removeAll()
+//
+//    for overlappingEvents in groupsOfEvents {
+//      let totalCount = CGFloat(overlappingEvents.count)
+//      for (index, event) in overlappingEvents.enumerated() {
+//        let startY = dateToY(event.datePeriod.beginning!)
+//        let endY = dateToY(event.datePeriod.end!)
+//        let floatIndex = CGFloat(index)
+//        let x = leftInset + floatIndex / totalCount * calendarWidth
+//        let equalWidth = calendarWidth / totalCount
+//        event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+//      }
+//    }
+//  }
 
   func prepareForReuse() {
-    eventViews.forEach {$0.removeFromSuperview()}
+    pool.enqueue(views: eventViews)
+    eventViews.removeAll()
+//    eventViews.forEach {$0.removeFromSuperview()}
   }
 
   // MARK: - Helpers

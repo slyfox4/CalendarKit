@@ -8,26 +8,31 @@ protocol EventViewDelegate: class {
   func eventViewDidLongPress(_ eventview: EventView)
 }
 
+protocol EventDescriptor {
+  var datePeriod: TimePeriod {get}
+  var data: [String] {get}
+  var color: UIColor {get}
+  var textColor: UIColor {get}
+  var backgroundColor: UIColor {get}
+  var frame: CGRect {get set}
+}
+
 open class EventView: UIView {
 
   weak var delegate: EventViewDelegate?
 
-  var color = UIColor() {
-    didSet {
-      textView.textColor = color.darkened(amount: 0.3)
-      backgroundColor = UIColor(red: color.redComponent, green: color.greenComponent, blue: color.blueComponent, alpha: 0.3)
-    }
-  }
+  var descriptor: EventDescriptor?
+
+//  var color = UIColor() {
+//    didSet {
+//      textView.textColor = color.darkened(amount: 0.3)
+//      backgroundColor = UIColor(red: color.redComponent, green: color.greenComponent, blue: color.blueComponent, alpha: 0.3)
+//    }
+//  }
 
   var contentHeight: CGFloat {
     //TODO: use strings array to calculate height
     return textView.height
-  }
-
-  var data = [String]() {
-    didSet {
-      textView.text = data.reduce("", {$0 + $1 + "\n"})
-    }
   }
 
   lazy var textView: UITextView = {
@@ -42,7 +47,7 @@ open class EventView: UIView {
   lazy var tapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(EventView.tap))
   lazy var longPressGestureRecognizer: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(EventView.longPress))
 
-  var datePeriod = TimePeriod()
+//  var datePeriod = TimePeriod()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -58,8 +63,14 @@ open class EventView: UIView {
     clipsToBounds = true
     [tapGestureRecognizer, longPressGestureRecognizer].forEach {addGestureRecognizer($0)}
 
-    color = tintColor
     addSubview(textView)
+  }
+
+  func updateWithDescriptor(event: EventDescriptor) {
+    descriptor = event
+    textView.text = event.data.reduce("", {$0 + $1 + "\n"})
+    textView.textColor = event.textColor
+    backgroundColor = event.backgroundColor
   }
 
   func tap() {
@@ -72,6 +83,7 @@ open class EventView: UIView {
 
   override open func draw(_ rect: CGRect) {
     super.draw(rect)
+    let color = descriptor?.color ?? tintColor ?? UIColor.blue
     let context = UIGraphicsGetCurrentContext()
     context!.interpolationQuality = .none
     context?.saveGState()

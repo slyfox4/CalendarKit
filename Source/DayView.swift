@@ -3,7 +3,7 @@ import Neon
 import DateTools
 
 protocol DayViewDataSource: class {
-  func eventViewsForDate(_ date: Date) -> [EventView]
+  func eventDescriptorsForDate(_ date: Date) -> [EventDescriptor]
 }
 
 protocol DayViewDelegate: class {
@@ -67,6 +67,7 @@ class DayView: UIView {
     let size = CGSize(width: contentWidth, height: 50)
     timelinePager.contentSize = size
     timelinePager.contentOffset = CGPoint(x: UIScreen.main.bounds.width, y: 0)
+//    timelinePager.requriesUpdate = true
   }
 
   func reloadData() {
@@ -80,8 +81,8 @@ class DayView: UIView {
 
   func updateTimeline(_ timeline: TimelineView) {
     guard let dataSource = dataSource else {return}
-    let eventViews = dataSource.eventViewsForDate(timeline.date)
-    timeline.eventViews = eventViews
+    let events = dataSource.eventDescriptorsForDate(timeline.date)
+    timeline.eventDescriptors = events
   }
 }
 
