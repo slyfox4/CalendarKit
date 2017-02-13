@@ -117,4 +117,9 @@ class ExampleController: DayViewController {
   override func dayViewDidLongPressEventView(_ eventView: EventView) {
     print("Event has been longPressed: \(eventView.data)")
   }
+    
+  override func dayViewDidChageCurrentDate(_ date: Date) {
+    print("New date has been selected: \(date)")
+  }
+    
 }

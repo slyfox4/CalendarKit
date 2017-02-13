@@ -55,9 +55,8 @@ public class DayHeaderView: UIView {
 
   func configurePages(_ selectedDate: Date = Date()) {
     for i in -1...1 {
-      let daySelector = DaySelector(daysInWeek: daysInWeek)
       let date = selectedDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: i, months: 0, years: 0))
-      daySelector.startDate = beginningOfWeek(date)
+      let daySelector = DaySelector(startDate: beginningOfWeek(date), daysInWeek: daysInWeek)
       pagingScrollView.reusableViews.append(daySelector)
       pagingScrollView.addSubview(daySelector)
       pagingScrollView.contentOffset = CGPoint(x: UIScreen.main.bounds.width, y: 0)
@@ -73,7 +72,7 @@ public class DayHeaderView: UIView {
     let offset = components.weekday! - calendar.firstWeekday
     components.day = components.day! - offset
 
-    return calendar.date(from: components)!
+    return calendar.date(from: components)!.dateOnly()
   }
 
   public func selectDate(_ selectedDate: Date) {

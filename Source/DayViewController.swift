@@ -41,6 +41,10 @@ extension DayViewController: DayViewDataSource {
   }
 
   open func dayViewDidLongPressEventView(_ eventView: EventView) {
+
+  }
+
+  open func dayViewDidChageCurrentDate(_ date: Date) {
     
   }
 }

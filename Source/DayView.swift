@@ -9,6 +9,8 @@ protocol DayViewDataSource: class {
 protocol DayViewDelegate: class {
   func dayViewDidSelectEventView(_ eventview: EventView)
   func dayViewDidLongPressEventView(_ eventView: EventView)
+  func dayViewDidChageCurrentDate(_ date: Date)
+
 }
 
 public class DayView: UIView {
@@ -22,7 +24,11 @@ public class DayView: UIView {
   let timelinePager = PagingScrollView<TimelineContainer>()
   var timelineSynchronizer: ScrollSynchronizer?
 
-  var currentDate = Date().dateOnly()
+  var currentDate = Date().dateOnly() {
+    didSet {
+      delegate?.dayViewDidChageCurrentDate(currentDate)
+    }
+  }
 
   var style = CalendarStyle()
 
