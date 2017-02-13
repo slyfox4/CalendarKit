@@ -1,5 +1,5 @@
 import UIKit
-import DateToolsSwift
+import SwiftDate
 
 open class DayViewController: UIViewController, DayViewDelegate {
 

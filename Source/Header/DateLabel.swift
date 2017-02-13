@@ -1,5 +1,5 @@
 import UIKit
-import DateToolsSwift
+import SwiftDate
 
 class DateLabel: UILabel {
 
@@ -48,7 +48,7 @@ class DateLabel: UILabel {
       textColor = style.activeTextColor
       backgroundColor = today ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
     } else {
-      let notTodayColor = date.isWeekend ? style.weekendTextColor : style.inactiveTextColor
+      let notTodayColor = date.isInWeekend ? style.weekendTextColor : style.inactiveTextColor
       font = UIFont.systemFont(ofSize: fontSize)
       textColor = today ? style.todayInactiveTextColor : notTodayColor
       backgroundColor = style.inactiveBackgroundColor

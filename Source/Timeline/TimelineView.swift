@@ -1,6 +1,6 @@
 import UIKit
 import Neon
-import DateToolsSwift
+import SwiftDate
 
 public class TimelineView: UIView, ReusableView {
 
@@ -168,12 +168,12 @@ public class TimelineView: UIView, ReusableView {
   func layoutEvents() {
     if eventViews.isEmpty {return}
 
-    let day = TimePeriod(beginning: date.dateOnly(),
-                         chunk: TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 1, weeks: 0, months: 0, years: 0))
+    let day = DateTimeInterval(start: date.startOfDay, end: date.endOfDay)
+    
 
-    let validEvents = eventViews.filter {$0.datePeriod.overlaps(with: day)}
-      .sorted {$0.datePeriod.beginning!.isEarlier(than: $1.datePeriod.beginning!)}
-
+    let validEvents = eventViews.filter {$0.datePeriod.intersects(day)}
+        .sorted {$0.datePeriod.start.isBefore(date: $1.datePeriod.start, orEqual: false, granularity: .day)}
+    
     var groupsOfEvents = [[EventView]]()
     var overlappingEvents = [EventView]()
 
@@ -182,7 +182,7 @@ public class TimelineView: UIView, ReusableView {
         overlappingEvents.append(event)
         continue
       }
-      if overlappingEvents.last!.datePeriod.overlaps(with: event.datePeriod) {
+      if overlappingEvents.last!.datePeriod.intersects(event.datePeriod) {
         overlappingEvents.append(event)
         continue
       } else {
@@ -198,8 +198,8 @@ public class TimelineView: UIView, ReusableView {
     for overlappingEvents in groupsOfEvents {
       let totalCount = CGFloat(overlappingEvents.count)
       for (index, event) in overlappingEvents.enumerated() {
-        let startY = dateToY(event.datePeriod.beginning!)
-        let endY = dateToY(event.datePeriod.end!)
+        let startY = dateToY(event.datePeriod.start)
+        let endY = dateToY(event.datePeriod.end)
         let floatIndex = CGFloat(index)
         let x = leftInset + floatIndex / totalCount * calendarWidth
         let equalWidth = calendarWidth / totalCount

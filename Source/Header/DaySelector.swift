@@ -1,6 +1,6 @@
 import UIKit
 import Neon
-import DateToolsSwift
+import SwiftDate
 
 protocol DaySelectorDelegate: class {
   func dateSelectorDidSelectDate(_ date: Date, index: Int)
@@ -38,7 +38,7 @@ class DaySelector: UIView, ReusableView {
     }
     set(newDate) {
       if let newDate = newDate {
-        selectedIndex = newDate.days(from: startDate, calendar: calendar)
+        selectedIndex = newDate.day - startDate.day
       }
     }
   }
@@ -48,7 +48,7 @@ class DaySelector: UIView, ReusableView {
   var dateLabels = [DateLabel]()
 
   init(startDate: Date = Date(), daysInWeek: Int = 7) {
-    self.startDate = startDate.dateOnly()
+    self.startDate = startDate
     self.daysInWeek = daysInWeek
     super.init(frame: CGRect.zero)
     initializeViews()
@@ -56,13 +56,13 @@ class DaySelector: UIView, ReusableView {
   }
 
   override init(frame: CGRect) {
-    startDate = Date().dateOnly()
+    startDate = Date()
     super.init(frame: frame)
     initializeViews()
   }
 
   required init?(coder aDecoder: NSCoder) {
-    startDate = Date().dateOnly()
+    startDate = Date()
     super.init(coder: aDecoder)
     initializeViews()
   }
@@ -81,7 +81,7 @@ class DaySelector: UIView, ReusableView {
 
   func configure() {
     for (increment, label) in dateLabels.enumerated() {
-      label.date = startDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: increment, weeks: 0, months: 0, years: 0))
+      label.date = startDate + increment.day
     }
   }
 

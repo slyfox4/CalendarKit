@@ -1,5 +1,5 @@
 import UIKit
-import DateToolsSwift
+import SwiftDate
 
 public protocol DayHeaderViewDelegate: class {
   func dateHeaderDateChanged(_ newDate: Date)
@@ -16,7 +16,7 @@ public class DayHeaderView: UIView {
   var style = DayHeaderStyle()
 
   var currentWeekdayIndex = -1
-  var currentDate = Date().dateOnly()
+  var currentDate = Date()
 
   var daySymbolsViewHeight: CGFloat = 20
   var pagingScrollViewHeight: CGFloat = 40
@@ -24,7 +24,7 @@ public class DayHeaderView: UIView {
 
   lazy var daySymbolsView: DaySymbolsView = DaySymbolsView(daysInWeek: self.daysInWeek)
   let pagingScrollView = PagingScrollView<DaySelector>()
-  lazy var swipeLabelView: SwipeLabelView = SwipeLabelView(date: Date().dateOnly())
+  lazy var swipeLabelView: SwipeLabelView = SwipeLabelView(date: Date())
 
   public init(selectedDate: Date) {
     self.currentDate = selectedDate
@@ -55,8 +55,8 @@ public class DayHeaderView: UIView {
 
   func configurePages(_ selectedDate: Date = Date()) {
     for i in -1...1 {
-      let date = selectedDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: i, months: 0, years: 0))
-      let daySelector = DaySelector(startDate: beginningOfWeek(date), daysInWeek: daysInWeek)
+      let date = selectedDate + i.week
+      let daySelector = DaySelector(startDate: date.startWeek, daysInWeek: daysInWeek)
       pagingScrollView.reusableViews.append(daySelector)
       pagingScrollView.addSubview(daySelector)
       pagingScrollView.contentOffset = CGPoint(x: UIScreen.main.bounds.width, y: 0)
@@ -67,20 +67,12 @@ public class DayHeaderView: UIView {
     currentWeekdayIndex = centerDaySelector.selectedIndex
   }
 
-  func beginningOfWeek(_ date: Date) -> Date {
-    var components = (calendar as NSCalendar).components([.year, .month, .day, .timeZone, .weekday], from: date)
-    let offset = components.weekday! - calendar.firstWeekday
-    components.day = components.day! - offset
-
-    return calendar.date(from: components)!.dateOnly()
-  }
-
   public func selectDate(_ selectedDate: Date) {
-    let selectedDate = selectedDate.dateOnly()
+    let selectedDate = selectedDate
     let centerDaySelector = pagingScrollView.reusableViews[1]
-    let startDate = centerDaySelector.startDate.dateOnly()
+    let startDate = centerDaySelector.startDate
 
-    let daysFrom = selectedDate.days(from: startDate, calendar: calendar)
+    let daysFrom = selectedDate.day - startDate!.day
 
     if daysFrom < 0 {
       pagingScrollView.scrollBackward()
@@ -130,7 +122,7 @@ extension DayHeaderView: PagingScrollViewDelegate {
   func updateViewAtIndex(_ index: Int) {
     let viewToUpdate = pagingScrollView.reusableViews[index]
     let weeksToAdd = index > 1 ? 3 : -3
-    viewToUpdate.startDate = viewToUpdate.startDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: weeksToAdd, months: 0, years: 0))
+    viewToUpdate.startDate = viewToUpdate.startDate + weeksToAdd.week
   }
 
   func scrollviewDidScrollToViewAtIndex(_ index: Int) {

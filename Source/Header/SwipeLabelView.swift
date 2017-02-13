@@ -6,8 +6,8 @@ class SwipeLabelView: UIView {
     willSet(newDate) {
       guard newDate != date
         else { return }
-      labels.last!.text = newDate.format(with: .full)
-      let shouldMoveForward = newDate.isLater(than: date)
+      labels.last!.text = newDate.string(format: .extended)
+      let shouldMoveForward = newDate.isAfter(date: date, granularity: .day)
       animate(shouldMoveForward)
     }
   }
@@ -28,7 +28,7 @@ class SwipeLabelView: UIView {
     self.date = date
     super.init(frame: .zero)
     configure()
-    labels.first!.text = date.format(with: .full)
+    labels.first!.text = date.string(format: .extended)
   }
 
   override init(frame: CGRect) {

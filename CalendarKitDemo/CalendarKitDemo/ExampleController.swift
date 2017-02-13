@@ -1,6 +1,6 @@
 import UIKit
 import CalendarKit
-import DateToolsSwift
+import SwiftDate
 
 enum SelectedStyle {
   case Dark
@@ -84,24 +84,24 @@ class ExampleController: DayViewController {
   // MARK: DayViewDataSource
 
   override func eventViewsForDate(_ date: Date) -> [EventView] {
-    var date = date.add(TimeChunk(seconds: 0, minutes: 0, hours: Int(arc4random_uniform(10) + 5), days: 0, weeks: 0, months: 0, years: 0))
+    var date = date + Int(arc4random_uniform(10) + 5).hour
     var events = [EventView]()
 
     for _ in 0...5 {
       let event = EventView()
       let duration = Int(arc4random_uniform(160) + 60)
-      let datePeriod = TimePeriod(beginning: date,
-                                  chunk: TimeChunk(seconds: 0, minutes: duration, hours: 0, days: 0, weeks: 0, months: 0, years: 0))
+      let datePeriod = DateTimeInterval(start: date, end: date + duration.minute)
+
 
       event.datePeriod = datePeriod
       var info = data[Int(arc4random_uniform(UInt32(data.count)))]
-      info.append("\(datePeriod.beginning!.format(with: "HH:mm")!) - \(datePeriod.end!.format(with: "HH:mm")!)")
+        info.append("\(datePeriod.start.string(format: .custom("HH:mm"))) - \(datePeriod.end.string(format: .custom("HH:mm")))")
       event.data = info
       event.color = colors[Int(arc4random_uniform(UInt32(colors.count)))]
       events.append(event)
 
       let nextOffset = Int(arc4random_uniform(250) + 40)
-      date = date.add(TimeChunk(seconds: 0, minutes: nextOffset, hours: 0, days: 0, weeks: 0, months: 0, years: 0))
+      date = date + nextOffset.minute
     }
 
     return events

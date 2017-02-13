@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '9.0'
   s.requires_arc = true
   s.source_files = 'Source/**/*'
-  s.dependency 'DateToolsSwift'
+  s.dependency 'SwiftDate'
   s.dependency 'Neon'
   s.dependency 'DynamicColor'
 end

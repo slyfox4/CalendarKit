@@ -1,6 +1,6 @@
 import UIKit
 import Neon
-import DateToolsSwift
+import SwiftDate
 
 protocol DayViewDataSource: class {
   func eventViewsForDate(_ date: Date) -> [EventView]
@@ -24,7 +24,7 @@ public class DayView: UIView {
   let timelinePager = PagingScrollView<TimelineContainer>()
   var timelineSynchronizer: ScrollSynchronizer?
 
-  var currentDate = Date().dateOnly() {
+  var currentDate = Date() {
     didSet {
       delegate?.dayViewDidChageCurrentDate(currentDate)
     }
@@ -62,7 +62,7 @@ public class DayView: UIView {
     for i in -1...1 {
       let timeline = TimelineView(frame: bounds)
       timeline.frame.size.height = timeline.fullHeight
-      timeline.date = currentDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: i, weeks: 0, months: 0, years: 0))
+      timeline.date = currentDate + i.days
 
       let verticalScrollView = TimelineContainer()
       verticalScrollView.timeline = timeline
@@ -114,7 +114,7 @@ extension DayView: PagingScrollViewDelegate {
   func updateViewAtIndex(_ index: Int) {
     let timeline = timelinePager.reusableViews[index].timeline
     let amount = index > 1 ? 1 : -1
-    timeline?.date = currentDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: amount, weeks: 0, months: 0, years: 0))
+    timeline?.date = currentDate + amount.days
     updateTimeline(timeline!)
   }
 
@@ -127,12 +127,12 @@ extension DayView: PagingScrollViewDelegate {
 
 extension DayView: DayHeaderViewDelegate {
   public func dateHeaderDateChanged(_ newDate: Date) {
-    if newDate.isEarlier(than: currentDate) {
+    if newDate.isBefore(date: currentDate, orEqual: false, granularity: .day) {
       let timelineContainer = timelinePager.reusableViews.first!
       timelineContainer.timeline.date = newDate
       updateTimeline(timelineContainer.timeline)
       timelinePager.scrollBackward()
-    } else if newDate.isLater(than: currentDate) {
+    } else if newDate.isAfter(date: currentDate, granularity: .day) {
       let timelineContainer = timelinePager.reusableViews.last!
       timelineContainer.timeline.date = newDate
       updateTimeline(timelineContainer.timeline)
