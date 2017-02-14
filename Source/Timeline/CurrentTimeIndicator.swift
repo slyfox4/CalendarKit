@@ -7,7 +7,7 @@ class CurrentTimeIndicator: UIView {
 
   var is24hClock = true
 
-  var date = Date() {
+  var date = Date().startOfDay {
     didSet {
       let dateFormat = is24hClock ? "HH:mm" : "h:mm a"
       timeLabel.text = date.string(format: .custom(dateFormat))

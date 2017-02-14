@@ -4,7 +4,7 @@ import SwiftDate
 
 public class TimelineView: UIView, ReusableView {
 
-  var date = Date() {
+  var date = Date().startOfDay {
     didSet {
       setNeedsLayout()
     }
@@ -199,7 +199,7 @@ public class TimelineView: UIView, ReusableView {
       let totalCount = CGFloat(overlappingEvents.count)
       for (index, event) in overlappingEvents.enumerated() {
         let startY = dateToY(event.datePeriod.start)
-        let endY = dateToY(event.datePeriod.end)
+        let endY = dateToY(event.datePeriod.end > date.endOfDay ? date.endOfDay : event.datePeriod.end)
         let floatIndex = CGFloat(index)
         let x = leftInset + floatIndex / totalCount * calendarWidth
         let equalWidth = calendarWidth / totalCount

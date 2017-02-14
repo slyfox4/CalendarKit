@@ -24,7 +24,7 @@ public class DayView: UIView {
   let timelinePager = PagingScrollView<TimelineContainer>()
   var timelineSynchronizer: ScrollSynchronizer?
 
-  var currentDate = Date() {
+  var currentDate = Date().startOfDay {
     didSet {
       delegate?.dayViewDidChageCurrentDate(currentDate)
     }

@@ -16,7 +16,7 @@ public class DayHeaderView: UIView {
   var style = DayHeaderStyle()
 
   var currentWeekdayIndex = -1
-  var currentDate = Date()
+  var currentDate = Date().startOfDay
 
   var daySymbolsViewHeight: CGFloat = 20
   var pagingScrollViewHeight: CGFloat = 40
@@ -24,7 +24,7 @@ public class DayHeaderView: UIView {
 
   lazy var daySymbolsView: DaySymbolsView = DaySymbolsView(daysInWeek: self.daysInWeek)
   let pagingScrollView = PagingScrollView<DaySelector>()
-  lazy var swipeLabelView: SwipeLabelView = SwipeLabelView(date: Date())
+  lazy var swipeLabelView: SwipeLabelView = SwipeLabelView(date: Date().startOfDay)
 
   public init(selectedDate: Date) {
     self.currentDate = selectedDate
@@ -53,7 +53,7 @@ public class DayHeaderView: UIView {
     backgroundColor = style.backgroundColor
   }
 
-  func configurePages(_ selectedDate: Date = Date()) {
+  func configurePages(_ selectedDate: Date = Date().startOfDay) {
     for i in -1...1 {
       let date = selectedDate + i.week
       let daySelector = DaySelector(startDate: date.startWeek, daysInWeek: daysInWeek)

@@ -84,7 +84,7 @@ class ExampleController: DayViewController {
   // MARK: DayViewDataSource
 
   override func eventViewsForDate(_ date: Date) -> [EventView] {
-    var date = date + Int(arc4random_uniform(10) + 5).hour
+    var date = date.startOfDay + Int(arc4random_uniform(10) + 5).hour
     var events = [EventView]()
 
     for _ in 0...5 {
@@ -95,7 +95,7 @@ class ExampleController: DayViewController {
 
       event.datePeriod = datePeriod
       var info = data[Int(arc4random_uniform(UInt32(data.count)))]
-        info.append("\(datePeriod.start.string(format: .custom("HH:mm"))) - \(datePeriod.end.string(format: .custom("HH:mm")))")
+        info.append("\(datePeriod.start.string(format: .custom("dd:MM HH:mm"))) - \(datePeriod.end.string(format: .custom("dd:MM HH:mm")))")
       event.data = info
       event.color = colors[Int(arc4random_uniform(UInt32(colors.count)))]
       events.append(event)

@@ -47,7 +47,7 @@ class DaySelector: UIView, ReusableView {
 
   var dateLabels = [DateLabel]()
 
-  init(startDate: Date = Date(), daysInWeek: Int = 7) {
+  init(startDate: Date = Date().startOfDay, daysInWeek: Int = 7) {
     self.startDate = startDate
     self.daysInWeek = daysInWeek
     super.init(frame: CGRect.zero)
@@ -56,13 +56,13 @@ class DaySelector: UIView, ReusableView {
   }
 
   override init(frame: CGRect) {
-    startDate = Date()
+    startDate = Date().startOfDay
     super.init(frame: frame)
     initializeViews()
   }
 
   required init?(coder aDecoder: NSCoder) {
-    startDate = Date()
+    startDate = Date().startOfDay
     super.init(coder: aDecoder)
     initializeViews()
   }
