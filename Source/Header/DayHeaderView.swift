@@ -51,9 +51,19 @@ public class DayHeaderView: UIView {
     }
     pagingScrollView.viewDelegate = self
     backgroundColor = style.backgroundColor
+    self.swipeLabelView.date = self.currentDate
+  }
+  
+  public func changeDate(_ date: Date) {
+    self.subviews.forEach { $0.removeFromSuperview() }
+    self.currentDate = date.startOfDay
+    configure()
+    configurePages(date)
+    self.layoutSubviews()
   }
 
   func configurePages(_ selectedDate: Date = Date().startOfDay) {
+    pagingScrollView.reset()
     for i in -1...1 {
       let date = selectedDate + i.week
       let daySelector = DaySelector(startDate: date.startWeek, daysInWeek: daysInWeek)

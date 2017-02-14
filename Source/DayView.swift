@@ -48,6 +48,15 @@ public class DayView: UIView {
     addSubview(dayHeaderView)
   }
 
+  public func changeDate(_ date: Date) {
+    currentDate = date.startOfDay
+    self.subviews.forEach { $0.removeFromSuperview() }
+    dayHeaderView.changeDate(date)
+    configure()
+    self.layoutSubviews()
+    self.reloadData()
+  }
+
   public func updateStyle(_ newStyle: CalendarStyle) {
     style = newStyle
     dayHeaderView.updateStyle(style.header)
@@ -59,6 +68,7 @@ public class DayView: UIView {
 
   func configureTimelinePager() {
     var verticalScrollViews = [TimelineContainer]()
+    timelinePager.reset()
     for i in -1...1 {
       let timeline = TimelineView(frame: bounds)
       timeline.frame.size.height = timeline.fullHeight

@@ -63,22 +63,7 @@ class ExampleController: DayViewController {
   }
 
   func changeStyle() {
-    var title: String!
-    var style: CalendarStyle!
-
-    if currentStyle == .Dark {
-      currentStyle = .Light
-      title = "Dark"
-      style = StyleGenerator.defaultStyle()
-    } else {
-      title = "Light"
-      style = StyleGenerator.darkStyle()
-      currentStyle = .Dark
-    }
-    updateStyle(style)
-    navigationItem.rightBarButtonItem!.title = title
-    navigationController?.navigationBar.barTintColor = style.header.backgroundColor
-    navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName:style.header.swipeLabel.textColor]
+    self.changeDate(Date() + 10.day)
   }
 
   // MARK: DayViewDataSource

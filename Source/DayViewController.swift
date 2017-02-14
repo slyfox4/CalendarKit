@@ -27,6 +27,10 @@ open class DayViewController: UIViewController, DayViewDelegate {
   public func updateStyle(_ newStyle: CalendarStyle) {
     dayView.updateStyle(newStyle)
   }
+    
+  public func changeDate(_ date: Date) {
+    dayView.changeDate(date)
+  }
 }
 
 extension DayViewController: DayViewDataSource {

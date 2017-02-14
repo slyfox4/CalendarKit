@@ -38,6 +38,13 @@ class PagingScrollView<T: UIView>: UIScrollView, UIScrollViewDelegate where T: R
     configure()
   }
 
+  func reset() {
+    self.reusableViews.removeAll()
+    self.subviews.forEach { $0.removeFromSuperview() }
+    self.previousPage = 1
+    self.accumulator = 0
+  }
+
   func configure() {
     isPagingEnabled = true
     isDirectionalLockEnabled = true
